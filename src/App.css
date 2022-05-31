@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,21 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+.codeblock {
+  font-size: 13px !important
+}
+
+.sv-row {
+  padding-bottom: 1em !important
+}
+
+.sv-container-modern__title {
+  padding-top: 1em !important
+}
+
+pre {
+  margin: 0 !important;
+  margin-bottom: 0em !important;
 }
