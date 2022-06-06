@@ -94,7 +94,7 @@ ${question.codeblock}
     const surveyData = args.data;
     const userData = {
       email: surveyData.Email,
-      name: surveyData.Name,
+      name: surveyData.Name || "Empty",
       agreeToReceiveEmails: surveyData.ReceiveEmails,
       answeredQuestions: {}
     };
