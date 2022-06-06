@@ -22,7 +22,7 @@ function App(args) {
     "logo": "https://www.progress.com/favicon.ico?v=2",
     "logoWidth": 60,
     "logoHeight": 60,
-    completedHtml: `<h3>Thank you for completing the quiz! Show this screen to the people from Progress and get your prize!</h3>`,
+    completedHtml: `<h3>Thank you for completing the quiz! Show this screen to the Progress team and get your special prize.</h3>`,
     hideNumbers: true,
     pages: [
       {
@@ -30,7 +30,7 @@ function App(args) {
           {
             name: "Top",
             type: "html",
-            html: `<h3>Enter the details below, complete the survey and show the NEXT screen to the people from Progress to get a prize!</h3>`
+            html: `<h3>Enter the details below, complete the survey and show the NEXT screen to the Progress team and get your special prize!</h3>`
           },
           {
             name: "Email",
