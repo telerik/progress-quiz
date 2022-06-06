@@ -2,7 +2,7 @@
   "name": "progress-quiz",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://rosen-vladimirov.github.io/progress-quiz",
+  "homepage": "https://telerik.github.io/progress-quiz",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
