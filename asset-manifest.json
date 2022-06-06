@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/progress-quiz/static/css/main.8e0b2615.css",
+    "main.js": "/progress-quiz/static/js/main.3d443d86.js",
+    "index.html": "/progress-quiz/index.html",
+    "main.8e0b2615.css.map": "/progress-quiz/static/css/main.8e0b2615.css.map",
+    "main.3d443d86.js.map": "/progress-quiz/static/js/main.3d443d86.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8e0b2615.css",
+    "static/js/main.3d443d86.js"
+  ]
+}
