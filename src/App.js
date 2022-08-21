@@ -9,7 +9,7 @@ function App(args) {
   const firebaseService = args.firebaseService;
 
   const surveyValidateQuestion = function (s, options) {
-    if (options && options.question && !options?.question?.isAnswerCorrect() ) {
+    if (options && options.question && !options?.question?.isAnswerCorrect()) {
       if (!options.question.isAnswerCorrect()) {
         options.error = "Incorrect answer!"
       }
@@ -18,11 +18,11 @@ function App(args) {
 
   const surveyJson = {
     "title": "Progress quiz",
-    "description": "Test your programming knowledge and win some cool prizes",
+    "description": "Test your logic skills and enter a raffle for supreme noise cancelling headset BOSE QUIETCOMFORT 35 II!",
     "logo": "https://www.progress.com/favicon.ico?v=2",
     "logoWidth": 60,
     "logoHeight": 60,
-    completedHtml: `<h3>Thank you for completing the quiz! Show this screen to the Progress team and get your special prize.</h3>`,
+    completedHtml: `<h3>Thank you for completing the quiz! We'll select our winner on Monday, Aug 29th and we will contact you via email.</h3>`,
     hideNumbers: true,
     pages: [
       {
@@ -30,7 +30,7 @@ function App(args) {
           {
             name: "Top",
             type: "html",
-            html: `<h3>Enter the details below, complete the survey and show the NEXT screen to the Progress team and get your special prize!</h3>`
+            html: `<h3>Fill out the form below to enter the raffle, and rest assured we will not overload your inbox. You'll hear from us if you win a prize, and we'll follow up via email after the event. You may opt out at any time.</h3>`
           },
           {
             name: "Email",
@@ -46,19 +46,20 @@ function App(args) {
             name: "Name",
             title: "Enter your name:",
             type: "text",
-            hideNumber: true
-          },
-          {
-            name: "ReceiveEmails",
-            title: "With your permission we may also use your personal data for recruitment & related newsfeed purposes, which include contacting you by email with information, news, and job opportunities.",
-            type: "radiogroup",
             hideNumber: true,
-            choices: [
-              "Yes",
-              "No"
-            ],
-            defaultValue: "Yes"
+            isRequired: true,
           },
+          // {
+          //   name: "ReceiveEmails",
+          //   title: "With your permission we may also use your personal data for recruitment & related newsfeed purposes, which include contacting you by email with information, news, and job opportunities.",
+          //   type: "radiogroup",
+          //   hideNumber: true,
+          //   choices: [
+          //     "Yes",
+          //     "No"
+          //   ],
+          //   defaultValue: "Yes"
+          // },
         ]
       }
     ]
@@ -66,12 +67,26 @@ function App(args) {
 
   for (const questionId in questions) {
     const question = questions[questionId];
+    const choices = [];
+
+    Object.keys(question.answers).forEach((key) => {
+      choices.push({
+        value: key,
+        text: `<img src="data:image/png;base64,${question.answers[key]}"/>` 
+      });
+    });
+
+    const generateImageTagFromParts = (obj) => {
+      const res = Object.values(obj).map(p => `<img src="data:image/png;base64,${p}"/>`).join("\n");
+      return res;
+    };
 
     surveyJson.pages.unshift({
       elements: [{
         hideNumber: true,
         type: question.questionType === "chooseLanguage" ? "dropdown" : "radiogroup",
         name: questionId,
+        // colCount: 4,
         title: `${question.question}${question.codeblock ? `
 <div id="codeblock" class="codeblock">
 <pre>
@@ -79,15 +94,18 @@ function App(args) {
 ${question.codeblock}
 </code>
 </pre>
-</div>` : ''}`,
-        choices: Object.values(question.answers),
-        correctAnswer: question.correctAnswer
-      }]
-    });
-  }
+</div>` : ''}${question.questionParts ? `
+<div>
+${generateImageTagFromParts(question.questionParts)}
+</div>`
+: ''}`,
+choices,
+correctAnswer: question.correctAnswer
+}]
+});
+}
 
   StylesManager.applyTheme("modern");
-
 
   const survey = new Model(surveyJson);
   survey.onCompleting.add((args) => {
@@ -95,8 +113,9 @@ ${question.codeblock}
     const userData = {
       email: surveyData.Email,
       name: surveyData.Name || "Empty",
-      agreeToReceiveEmails: surveyData.ReceiveEmails,
-      answeredQuestions: {}
+      agreeToReceiveEmails: surveyData.ReceiveEmails || "Yes",
+      answeredQuestions: {},
+      dateTime: Date.now()
     };
     let keys = Object.keys(surveyData);
     keys = keys.filter(k => k !== "Email" && k !== "Name" && k !== "ReceiveEmails");

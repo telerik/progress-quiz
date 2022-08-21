@@ -39,18 +39,31 @@ class FirebaseService {
         const db = getDatabase();
 
         // Get a key for a new Post.
-        const newPostKey = push(child(ref(db), 'users')).key;
+        const newPostKey = push(child(ref(db), 'devBgUsers')).key;
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
         const updates = {};
-        updates['/users/' + newPostKey] = userData;
+        updates['/devBgUsers/' + newPostKey] = userData;
+
+        return update(ref(db), updates);
+    }
+
+    writeNewDevBgQuestion(question) {
+        const db = getDatabase();
+
+        // Get a key for a new Post.
+        const newPostKey = push(child(ref(db), 'devBgQuestions')).key;
+
+        // Write the new post's data simultaneously in the posts list and the user's post list.
+        const updates = {};
+        updates['/devBgQuestions/' + newPostKey] = question;
 
         return update(ref(db), updates);
     }
 
     getQuestions() {
         const dbRef = ref(getDatabase());
-        return get(child(dbRef, `/questions`))
+        return get(child(dbRef, `/devBgQuestions`))
             .then((snapshot) => {
                 if (snapshot.exists()) {
                     return snapshot.toJSON();
