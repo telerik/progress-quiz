@@ -39,11 +39,11 @@ class FirebaseService {
         const db = getDatabase();
 
         // Get a key for a new Post.
-        const newPostKey = push(child(ref(db), 'devBgUsers')).key;
+        const newPostKey = push(child(ref(db), 'fmi2022Users')).key;
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
         const updates = {};
-        updates['/devBgUsers/' + newPostKey] = userData;
+        updates['/fmi2022Users/' + newPostKey] = userData;
 
         return update(ref(db), updates);
     }
