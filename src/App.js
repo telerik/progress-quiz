@@ -8,11 +8,25 @@ function App(args) {
   const questions = args.questions;
   const firebaseService = args.firebaseService;
 
+  const surveyValueChanging = function(sender, options) {
+    if (options && options.question && options.question.name === 'Email') {
+      options.value = (options.value || "").trim();
+    }
+
+  }
   const surveyValidateQuestion = function (s, options) {
     if (options && options.question && !options?.question?.isAnswerCorrect()) {
       if (!options.question.isAnswerCorrect()) {
         options.error = "Incorrect answer!"
       }
+    }
+
+    if (options && options.question && options.question.name === 'Email') {
+      options.value = (options.value || "").trim();
+      const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()=[\]\.,;:\s@\"]+\.)+[^<>()=[\]\.,;:\s@\"]{2,})$/i;
+      if (!re.test(options.value)) {
+        options.error = "Please enter valid email!";
+      } 
     }
   }
 
@@ -37,10 +51,7 @@ function App(args) {
             title: "Email",
             type: "text",
             isRequired: true,
-            hideNumber: true,
-            validators: [{
-              type: "email"
-            }]
+            hideNumber: true
           },
           {
             name: "Name",
@@ -148,6 +159,7 @@ correctAnswer: question.correctAnswer
       <Survey
         model={survey}
         onValidateQuestion={surveyValidateQuestion}
+        onValueChanging={surveyValueChanging}
       />;
     </div>
   );
