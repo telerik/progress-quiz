@@ -32,11 +32,11 @@ function App(args) {
 
   const surveyJson = {
     "title": "Progress quiz",
-    "description": "Test your logic skills and enter a raffle for supreme noise cancelling headset BOSE QUIETCOMFORT 35 II!",
+    "description": "Test your knowledge and win some cool prizes",
     "logo": "https://www.progress.com/favicon.ico?v=2",
     "logoWidth": 60,
     "logoHeight": 60,
-    completedHtml: `<h3>Thank you for completing the quiz! We'll select our winner on Monday, Aug 29th and we will contact you via email.</h3>`,
+    completedHtml: `<h3>Thank you for completing the quiz! Show this screen to the Progress team and get your special prize.</h3>`,
     hideNumbers: true,
     pages: [
       {
@@ -44,7 +44,7 @@ function App(args) {
           {
             name: "Top",
             type: "html",
-            html: `<h3>Fill out the form below to enter the raffle, and rest assured we will not overload your inbox. You'll hear from us if you win a prize, and we'll follow up via email after the event. You may opt out at any time.</h3>`
+            html: `<h3>Enter the details below, complete the survey and show the NEXT screen to the Progress team and get your special prize!</h3>`
           },
           {
             name: "Email",
@@ -57,20 +57,19 @@ function App(args) {
             name: "Name",
             title: "Enter your name:",
             type: "text",
-            hideNumber: true,
-            isRequired: true,
+            hideNumber: true
           },
-          // {
-          //   name: "ReceiveEmails",
-          //   title: "With your permission we may also use your personal data for recruitment & related newsfeed purposes, which include contacting you by email with information, news, and job opportunities.",
-          //   type: "radiogroup",
-          //   hideNumber: true,
-          //   choices: [
-          //     "Yes",
-          //     "No"
-          //   ],
-          //   defaultValue: "Yes"
-          // },
+          {
+            name: "ReceiveEmails",
+            title: "With your permission we may also use your personal data for recruitment & related newsfeed purposes, which include contacting you by email with information, news, and job opportunities.",
+            type: "radiogroup",
+            hideNumber: true,
+            choices: [
+              "Yes",
+              "No"
+            ],
+            defaultValue: "Yes"
+          },
         ]
       }
     ]

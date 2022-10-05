@@ -6,7 +6,7 @@ import { FirebaseService } from './firebase.service';
 
 const firebaseService = new FirebaseService();
 const root = ReactDOM.createRoot(document.getElementById('root'));
-firebaseService.getQuestionsForCurrentUser(1)
+firebaseService.getQuestionsForCurrentUser(2)
   .then(questions => {
     root.render(
       <React.StrictMode>
