@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, get, child, onValue, push, update } from "firebase/database";
 
 class FirebaseService {
+    questionsDbName = 'devBgQuestions';
+
     firebaseConfig = {
         apiKey: "AIzaSyA5Og8fwj8qlPfrTX2FZKSlP3R4xqGi9d4",
         authDomain: "students-88274.firebaseapp.com",
@@ -38,12 +40,13 @@ class FirebaseService {
     writeNewUser(userData) {
         const db = getDatabase();
 
+        const dbTableName = 'ista2022Users';
         // Get a key for a new Post.
-        const newPostKey = push(child(ref(db), 'fmi2022Users')).key;
+        const newPostKey = push(child(ref(db), dbTableName)).key;
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
         const updates = {};
-        updates['/fmi2022Users/' + newPostKey] = userData;
+        updates[`/${dbTableName}/` + newPostKey] = userData;
 
         return update(ref(db), updates);
     }
@@ -52,18 +55,18 @@ class FirebaseService {
         const db = getDatabase();
 
         // Get a key for a new Post.
-        const newPostKey = push(child(ref(db), 'devBgQuestions')).key;
+        const newPostKey = push(child(ref(db), this.questionsDbName)).key;
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
         const updates = {};
-        updates['/devBgQuestions/' + newPostKey] = question;
+        updates[`/${this.questionsDbName}/` + newPostKey] = question;
 
         return update(ref(db), updates);
     }
 
     getQuestions() {
         const dbRef = ref(getDatabase());
-        return get(child(dbRef, `/devBgQuestions`))
+        return get(child(dbRef, `/${this.questionsDbName}`))
             .then((snapshot) => {
                 if (snapshot.exists()) {
                     return snapshot.toJSON();
