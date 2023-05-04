@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, get, child, onValue, push, update } from "firebase/database";
 
 class FirebaseService {
-    questionsDbName = 'devBgQuestions';
+    questionsDbName = 'questions';
 
     firebaseConfig = {
         apiKey: "AIzaSyA5Og8fwj8qlPfrTX2FZKSlP3R4xqGi9d4",
@@ -40,7 +40,7 @@ class FirebaseService {
     writeNewUser(userData) {
         const db = getDatabase();
 
-        const dbTableName = 'AUBGUsers2022';
+        const dbTableName = 'May2022Users';
         // Get a key for a new Post.
         const newPostKey = push(child(ref(db), dbTableName)).key;
 

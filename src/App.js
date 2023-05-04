@@ -80,12 +80,15 @@ function App(args) {
     const question = questions[questionId];
     const choices = [];
 
-    Object.keys(question.answers).forEach((key) => {
-      choices.push({
-        value: key,
-        text: `<img src="data:image/png;base64,${question.answers[key]}"/>`
-      });
-    });
+    // Uncomment when using the devBgQuestions
+    // Object.keys(question.answers).forEach((key) => {
+    //   choices.push({
+    //     value: key,
+    //     text: `<img src="data:image/png;base64,${question.answers[key]}"/>`
+    //   });
+    // });
+
+    choices.push(...Object.values(question.answers));
 
     const generateImageTagFromParts = (obj) => {
       const res = Object.values(obj).map(p => `<img src="data:image/png;base64,${p}"/>`).join("\n");
