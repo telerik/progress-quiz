@@ -40,6 +40,7 @@ class FirebaseService {
     writeNewUser(userData) {
         const db = getDatabase();
 
+        // TODO: Replace here
         const dbTableName = 'May2022Users';
         // Get a key for a new Post.
         const newPostKey = push(child(ref(db), dbTableName)).key;
