@@ -6,6 +6,8 @@ import './App.css';
 
 function App(args) {
   const questions = args.questions;
+
+  // TODO: Replace FMI with ISTA in the question taskJS1
   const firebaseService = args.firebaseService;
 
   const surveyValueChanging = function (sender, options) {
@@ -161,7 +163,7 @@ ${generateImageTagFromParts(question.questionParts)}
   survey.onComplete.add((sender, a) => {
     if (!localStorage.getItem("cannotGetAdditionalPrize")) {
       setTimeout(() => {
-        document.querySelector('#completionHtml').textContent = "Congrats on completing the quiz on the first try! Show this screen to the Progress team to get an additional prize.";
+        document.querySelector('#completionHtml').textContent = "Congrats on completing the quiz without mistakes! Show this screen to the Progress team to get a special prize.";
         document.querySelector(".sv-body.sv-completedpage").style.backgroundColor="#5CE500"
       }, 100);
 
@@ -175,7 +177,7 @@ ${generateImageTagFromParts(question.questionParts)}
         model={survey}
         onValidateQuestion={surveyValidateQuestion}
         onValueChanging={surveyValueChanging}
-      />;
+      />
     </div>
   );
 }

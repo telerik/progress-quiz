@@ -26,11 +26,16 @@ class FirebaseService {
 
     async getQuestionsForCurrentUser(numberOfQuestions) {
         const questions = await this.getQuestions();
+
         let keys = Object.keys(questions);
         const finalQuestions = {};
         for (let i = 0; i < numberOfQuestions; i++) {
             const elementKey = this.getRandomlySelectedItem(keys);
             finalQuestions[elementKey] = questions[elementKey];
+            if (finalQuestions[elementKey].codeblock && finalQuestions[elementKey].codeblock.indexOf("FMI") !== -1) {
+                finalQuestions[elementKey].codeblock = finalQuestions[elementKey].codeblock.replace(/FMI/g, "ISTA");
+            }
+
             keys.splice(keys.indexOf(elementKey), 1);
         }
 
