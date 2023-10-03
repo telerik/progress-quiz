@@ -6,72 +6,103 @@ import './App.css';
 
 function App(args) {
   const questions = args.questions;
+
+  // TODO: Replace FMI with ISTA in the question taskJS1
   const firebaseService = args.firebaseService;
 
+  const surveyValueChanging = function (sender, options) {
+    if (options && options.question && options.question.name === 'Email') {
+      options.value = (options.value || "").trim();
+    }
+
+  }
   const surveyValidateQuestion = function (s, options) {
-    if (options && options.question && !options?.question?.isAnswerCorrect() ) {
+    if (options && options.question && !options?.question?.isAnswerCorrect()) {
       if (!options.question.isAnswerCorrect()) {
+        localStorage.setItem("cannotGetAdditionalPrize", true);
         options.error = "Incorrect answer!"
+      }
+    }
+
+    if (options && options.question && options.question.name === 'Email') {
+      options.value = (options.value || "").trim();
+      const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()=[\]\.,;:\s@\"]+\.)+[^<>()=[\]\.,;:\s@\"]{2,})$/i;
+      if (!re.test(options.value)) {
+        options.error = "Please enter valid email!";
       }
     }
   }
 
   const surveyJson = {
     "title": "Progress quiz",
-    "description": "Test your programming knowledge and win some cool prizes",
+    "description": "Test your knowledge and win some cool prizes",
     "logo": "https://www.progress.com/favicon.ico?v=2",
     "logoWidth": 60,
     "logoHeight": 60,
-    completedHtml: `<h3>Thank you for completing the quiz! Show this screen to the Progress team and get your special prize.</h3>`,
+    completedHtml: `<h3 id="completionHtml">Thank you for completing the quiz! Show this screen to the Progress team and get your special prize.</h3>`,
     hideNumbers: true,
     pages: [
-      {
-        elements: [
-          {
-            name: "Top",
-            type: "html",
-            html: `<h3>Enter the details below, complete the survey and show the NEXT screen to the Progress team and get your special prize!</h3>`
-          },
-          {
-            name: "Email",
-            title: "Email",
-            type: "text",
-            isRequired: true,
-            hideNumber: true,
-            validators: [{
-              type: "email"
-            }]
-          },
-          {
-            name: "Name",
-            title: "Enter your name:",
-            type: "text",
-            hideNumber: true
-          },
-          {
-            name: "ReceiveEmails",
-            title: "With your permission we may also use your personal data for recruitment & related newsfeed purposes, which include contacting you by email with information, news, and job opportunities.",
-            type: "radiogroup",
-            hideNumber: true,
-            choices: [
-              "Yes",
-              "No"
-            ],
-            defaultValue: "Yes"
-          },
-        ]
-      }
+      // {
+      //   elements: [
+      //     {
+      //       name: "Top",
+      //       type: "html",
+      //       html: `<h3>Enter the details below, complete the survey and show the NEXT screen to the Progress team and get your special prize!</h3>`
+      //     },
+      //     {
+      //       name: "Email",
+      //       title: "Email",
+      //       type: "text",
+      //       isRequired: true,
+      //       hideNumber: true
+      //     },
+      //     {
+      //       name: "Name",
+      //       title: "Enter your name:",
+      //       type: "text",
+      //       hideNumber: true
+      //     },
+      //     {
+      //       name: "ReceiveEmails",
+      //       title: "With your permission we may also use your personal data for recruitment & related newsfeed purposes, which include contacting you by email with information, news, and job opportunities.",
+      //       type: "radiogroup",
+      //       hideNumber: true,
+      //       choices: [
+      //         "Yes",
+      //         "No"
+      //       ],
+      //       defaultValue: "Yes"
+      //     },
+      //   ]
+      // }
     ]
   };
 
   for (const questionId in questions) {
     const question = questions[questionId];
+    const choices = [];
+
+    // Uncomment when using the devBgQuestions
+    // Object.keys(question.answers).forEach((key) => {
+    //   choices.push({
+    //     value: key,
+    //     text: `<img src="data:image/png;base64,${question.answers[key]}"/>`
+    //   });
+    // });
+
+    choices.push(...Object.values(question.answers));
+
+    const generateImageTagFromParts = (obj) => {
+      const res = Object.values(obj).map(p => `<img src="data:image/png;base64,${p}"/>`).join("\n");
+      return res;
+    };
 
     surveyJson.pages.unshift({
       elements: [{
         hideNumber: true,
         type: question.questionType === "chooseLanguage" ? "dropdown" : "radiogroup",
         name: questionId,
+        // colCount: 4,
         title: `${question.question}${question.codeblock ? `
 <div id="codeblock" class="codeblock">
 <pre>
@@ -79,8 +110,12 @@ function App(args) {
 ${question.codeblock}
 </code>
 </pre>
-</div>` : ''}`,
-        choices: Object.values(question.answers),
+</div>` : ''}${question.questionParts ? `
+<div>
+${generateImageTagFromParts(question.questionParts)}
+</div>`
+            : ''}`,
+        choices,
         correctAnswer: question.correctAnswer
       }]
     });
@@ -88,16 +123,17 @@ ${question.codeblock}
 
   StylesManager.applyTheme("modern");
 
-
   const survey = new Model(surveyJson);
   survey.onCompleting.add((args) => {
     const surveyData = args.data;
     const userData = {
       email: surveyData.Email,
       name: surveyData.Name || "Empty",
-      agreeToReceiveEmails: surveyData.ReceiveEmails,
-      answeredQuestions: {}
+      agreeToReceiveEmails: surveyData.ReceiveEmails || "Yes",
+      answeredQuestions: {},
+      dateTime: Date.now()
     };
+
     let keys = Object.keys(surveyData);
     keys = keys.filter(k => k !== "Email" && k !== "Name" && k !== "ReceiveEmails");
 
@@ -106,7 +142,7 @@ ${question.codeblock}
     }
 
     // this call is async
-    firebaseService.writeNewUser(userData);
+    // firebaseService.writeNewUser(userData);
   });
 
   // Create showdown markdown converter
@@ -124,12 +160,24 @@ ${question.codeblock}
     options.html = str;
   });
 
+  survey.onComplete.add((sender, a) => {
+    if (!localStorage.getItem("cannotGetAdditionalPrize")) {
+      setTimeout(() => {
+        document.querySelector('#completionHtml').textContent = "Congrats on completing the quiz without mistakes! Show this screen to the Progress team to get a special prize.";
+        document.querySelector(".sv-body.sv-completedpage").style.backgroundColor="#5CE500"
+      }, 100);
+
+      localStorage.setItem("cannotGetAdditionalPrize", true);
+    }
+  });
+
   return (
     <div id="appSurvey" className="App">
       <Survey
         model={survey}
         onValidateQuestion={surveyValidateQuestion}
-      />;
+        onValueChanging={surveyValueChanging}
+      />
     </div>
   );
 }

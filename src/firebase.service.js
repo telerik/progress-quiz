@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, get, child, onValue, push, update } from "firebase/database";
 
 class FirebaseService {
+    questionsDbName = 'questions';
+
     firebaseConfig = {
         apiKey: "AIzaSyA5Og8fwj8qlPfrTX2FZKSlP3R4xqGi9d4",
         authDomain: "students-88274.firebaseapp.com",
@@ -24,11 +26,16 @@ class FirebaseService {
 
     async getQuestionsForCurrentUser(numberOfQuestions) {
         const questions = await this.getQuestions();
+
         let keys = Object.keys(questions);
         const finalQuestions = {};
         for (let i = 0; i < numberOfQuestions; i++) {
             const elementKey = this.getRandomlySelectedItem(keys);
             finalQuestions[elementKey] = questions[elementKey];
+            if (finalQuestions[elementKey].codeblock && finalQuestions[elementKey].codeblock.indexOf("FMI") !== -1) {
+                finalQuestions[elementKey].codeblock = finalQuestions[elementKey].codeblock.replace(/FMI/g, "ISTA");
+            }
+
             keys.splice(keys.indexOf(elementKey), 1);
         }
 
@@ -38,19 +45,34 @@ class FirebaseService {
     writeNewUser(userData) {
         const db = getDatabase();
 
+        // TODO: Replace here
+        const dbTableName = 'May2022Users';
         // Get a key for a new Post.
-        const newPostKey = push(child(ref(db), 'users')).key;
+        const newPostKey = push(child(ref(db), dbTableName)).key;
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
         const updates = {};
-        updates['/users/' + newPostKey] = userData;
+        updates[`/${dbTableName}/` + newPostKey] = userData;
+
+        return update(ref(db), updates);
+    }
+
+    writeNewDevBgQuestion(question) {
+        const db = getDatabase();
+
+        // Get a key for a new Post.
+        const newPostKey = push(child(ref(db), this.questionsDbName)).key;
+
+        // Write the new post's data simultaneously in the posts list and the user's post list.
+        const updates = {};
+        updates[`/${this.questionsDbName}/` + newPostKey] = question;
 
         return update(ref(db), updates);
     }
 
     getQuestions() {
         const dbRef = ref(getDatabase());
-        return get(child(dbRef, `/questions`))
+        return get(child(dbRef, `/${this.questionsDbName}`))
             .then((snapshot) => {
                 if (snapshot.exists()) {
                     return snapshot.toJSON();
